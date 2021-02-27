@@ -1,20 +1,18 @@
 import sys
 import sqlite3
 
+from release.UI.addEditCoffeeForm import Ui_Form
+from release.UI.main import Ui_MainWindow
 from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog
 from PyQt5.QtWidgets import QTableWidgetItem
-from PyQt5.QtGui import QPainter, QPen, QColor
-from PyQt5.QtCore import Qt
-from random import randint
-from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class DialogWindow(QDialog):
+class DialogWindow(QDialog, Ui_Form):
     def __init__(self, main):
         super().__init__()
-        uic.loadUi('addEditCoffeeForm.ui', self)
-        self.con = sqlite3.connect('coffee.sqlite')
+        self.setupUi(self)
+        self.con = sqlite3.connect('release/data/coffee.sqlite')
         self.cur = self.con.cursor()
         self.pushButton.clicked.connect(self.save)
         self.main = main
@@ -39,11 +37,11 @@ class DialogWindow(QDialog):
         self.close()
 
 
-class MyWidget(QMainWindow):
+class MyWidget(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi('main.ui', self)
-        self.con = sqlite3.connect('coffee.sqlite')
+        self.setupUi(self)
+        self.con = sqlite3.connect('release/data/coffee.sqlite')
         self.cur = self.con.cursor()
         self.modified = []
         self.pushButton.clicked.connect(self.save_results)
@@ -79,7 +77,7 @@ class MyWidget(QMainWindow):
     def dialog_window(self):
         dialog = DialogWindow(self)
         dialog.exec()
-        if len(self.new_post[0]) > 0:
+        if len(self.new_post) > 0:
             print("""INSERT INTO coffee({},{},{},{},{},{},{})
              VALUES("{}","{}","{}","{}","{}",{},{})""".format(*self.columns[1:], *self.new_post))
             self.cur.execute("""INSERT INTO coffee({},{},{},{},{},{},{})
